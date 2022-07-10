@@ -113,7 +113,7 @@ class MainWindow(QMainWindow, WindowMixin):
         if self.label_hist:
             self.default_label = self.label_hist[0]
         else:
-            print("Not find:/data/predefined_classes.txt (optional)")
+            print("Not find:predefined_classes.txt (optional)", default_prefdef_class_file)
 
         # Main widgets and related state.
         self.label_dialog = LabelDialog(parent=self, list_item=self.label_hist)
@@ -1673,7 +1673,7 @@ def inverted(color):
     return QColor(*[255 - v for v in color.getRgb()])
 
 
-def read(filename, default=None):
+def read2(filename, default=None):
     try:
         reader = QImageReader(filename)
         reader.setAutoTransform(True)
@@ -1681,6 +1681,12 @@ def read(filename, default=None):
     except:
         return default
 
+def read(filename, default=None):
+    try:
+        with open(filename, 'rb') as f:
+            return QImage.fromData(f.read())
+    except:
+        return default
 
 def get_main_app(argv=None):
     """
@@ -1696,7 +1702,7 @@ def get_main_app(argv=None):
     argparser = argparse.ArgumentParser()
     argparser.add_argument("image_dir", nargs="?")
     argparser.add_argument("class_file",
-                           default=os.path.join(os.path.dirname(__file__), "data", "predefined_classes.txt"),
+                           default=os.path.join(os.path.dirname(sys.argv[0]), "data", "predefined_classes.txt"),
                            nargs="?")
     argparser.add_argument("save_dir", nargs="?")
     args = argparser.parse_args(argv[1:])
